@@ -223,5 +223,61 @@ class SubException extends HotelAgeException{
 }
 ```
 
+* throw new Exception(描述信息)适合于临时或者应用频率不高的异常处理情况；而自定义异常类，完成的是通过继承某种已存在异常类型，创建一个独特、结合业务产生的类型，并设置其异常描述信息，适合该异常将在项目中相当频繁出现并应用的场景
+* 自定义异常需要先通过throw抛出，才能被捕获，否则无法自动被程序捕获或处理
+
 
 # 异常链
+* 将异常发生的原因一个一个串起来，把底层的异常信息传给上层，这样逐层抛出，即为异常链
+* 捕获一个异常后再抛出另一个异常，新抛出的异常会导致异常链前面的异常信息丢失
+* 可以通过构造方法或者initCause()保留之前的异常
+```java
+public class TryDemoFive {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {
+			testThree();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void testOne() throws HotelAgeException {
+		throw new HotelAgeException();
+	}
+
+	public static void testTwo() throws Exception {
+		try {
+			testOne();
+		} catch (HotelAgeException e) {
+			throw new Exception("我是新产生的异常1",e);
+		}
+	}
+
+	public static void testThree() throws Exception {
+		try {
+			testTwo();
+		} catch (Exception e) {
+			Exception e1=new Exception("我是新产生的异常2");
+			e1.initCause(e);
+			throw e1;
+//			throw new Exception("我是新产生的异常2",e);
+		}
+	}
+}
+```
+```java
+// 另一种方法
+public static void methodOne() throws MyException{
+    throw new MyException();
+}
+public static void methodTwo() throws Exception{
+    try{
+        methodOne();
+    }catch(MyException ex){
+        throw new Exception("新异常",ex)
+    }
+}
+```
